@@ -8,6 +8,10 @@
     <title>Sentence Viewer</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: sans-serif;
             text-align: center;
@@ -33,15 +37,33 @@
         }
 
         button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
             font-size: 1rem;
             padding: 0.5rem 1rem;
             margin: 0.5rem;
+            min-height: 2.5rem;
             border: none;
             border-radius: 0.5rem;
             background: #1747E5;
             color: white;
             cursor: pointer;
         }
+
+        input[type="number"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            min-height: 2.5rem;
+            border: 1px solid #1747E5;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
 
         a,
         a:visited,
@@ -69,6 +91,7 @@
         <div id="sentence"></div>
         <div id="buttons">
             <button id="back">前へ</button>
+            <input type="number" id="index" value="1" min="1" max="1000">
             <button id="next">次へ</button>
         </div>
     </main>
@@ -104,6 +127,9 @@
                 const sentenceElement = document.getElementById("sentence");
                 const nextButton = document.getElementById("next");
                 const backButton = document.getElementById("back");
+                const indexInput = document.getElementById("index");
+
+                indexInput.max = sentences.length;
 
                 const updateSentence = async () => {
                     const {
@@ -123,6 +149,7 @@
                     sentenceElement.innerHTML = rubyArray.join("、");
                     document.title = `Sentence Viewer | ${title}`;
                     document.querySelector("h1").innerText = `Sentence Viewer | ${title}`;
+                    indexInput.value = index + 1;
                 }
 
                 nextButton.addEventListener("click", () => {
@@ -132,6 +159,11 @@
 
                 backButton.addEventListener("click", () => {
                     index = (index - 1 + sentences.length) % sentences.length;
+                    updateSentence();
+                });
+
+                indexInput.addEventListener("change", () => {
+                    index = (parseInt(indexInput.value) - 1 + sentences.length) % sentences.length;
                     updateSentence();
                 });
 
