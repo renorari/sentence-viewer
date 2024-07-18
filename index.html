@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Sentence Viewer</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        }
+
+        main {
+            margin: 2rem;
+        }
+
+        #sentence {
+            font-size: 2rem;
+            line-height: 3;
+        }
+
+        #buttons {
+            margin-top: 1rem;
+        }
+
+        button {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: #1747E5;
+            color: white;
+            cursor: pointer;
+        }
+
+        a,
+        a:visited,
+        a:link,
+        a:hover,
+        a:active {
+            color: #1747E5;
+        }
+
+        footer {
+            font-size: 0.5rem;
+            color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            Sentence Viewer
+        </h1>
+    </header>
+
+    <main>
+        <div id="sentence"></div>
+        <div id="buttons">
+            <button id="back">前へ</button>
+            <button id="next">次へ</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            このページで使用されている文章は、<a href="./copying" target="_blank">このライセンス</a>に基づいて利用されており、原文は<a
+                href="https://ja.osdn.net/projects/galateatalk/" target="_blank">GalateaTalk VoiceMaker</a>から引用されています。
+            <br>
+            このページの作者は、このページに関する一切の保証を否認し、直接的、間接的、結果的損害やデータや利益の損失に対して一切の責任を負いません。
+        </p>
+        <p>
+            元データの変更点に関する情報は、<a href="./changelog" target="_blank">この変更履歴</a>をご覧ください。
+            <br>
+            このページのソースコードは、<a href="https://github.com/renorari/sentence-viewer" target="_blank">GitHub</a>で公開されています。
+        </p>
+    </footer>
+
+    <script>
+        fetch("./sentence.txt")
+            .then(res => res.text())
+            .then(data => {
+                const sentences = data.split("\n").map(sentence => {
+                    const [title, text, read] = sentence.split(":").map(s => s.trim());
+                    return {
+                        title,
+                        text,
+                        read
+                    }
+                });
+
+                let index = 0;
+                const sentenceElement = document.getElementById("sentence");
+                const nextButton = document.getElementById("next");
+                const backButton = document.getElementById("back");
+
+                const updateSentence = async () => {
+                    const {
+                        title,
+                        text,
+                        read
+                    } = sentences[index];
+                    const textArray = text.split("、");
+                    const readArray = read.split("、");
+                    const rubyArray = textArray.map((t, i) => {
+                        if (t === readArray[i]) {
+                            return t;
+                        } else {
+                            return `<ruby><rb>${t}</rb><rt>${readArray[i]}</rt></ruby>`;
+                        }
+                    });
+                    sentenceElement.innerHTML = rubyArray.join("、");
+                    document.title = `Sentence Viewer | ${title}`;
+                    document.querySelector("h1").innerText = `Sentence Viewer | ${title}`;
+                }
+
+                nextButton.addEventListener("click", () => {
+                    index = (index + 1) % sentences.length;
+                    updateSentence();
+                });
+
+                backButton.addEventListener("click", () => {
+                    index = (index - 1 + sentences.length) % sentences.length;
+                    updateSentence();
+                });
+
+                updateSentence();
+            });
+    </script>
+</body>
+
+</html>
