@@ -154,14 +154,36 @@
                     localStorage.setItem("sentence-viewer-index", index);
                 }
 
-                nextButton.addEventListener("click", () => {
+                function next() {
                     index = (index + 1) % sentences.length;
                     updateSentence();
+                }
+
+                function back() {
+                    index = (index - 1 + sentences.length) % sentences.length;
+                    updateSentence();
+                }
+
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "ArrowRight") {
+                        next();
+                    } else if (e.key === "ArrowLeft") {
+                        back();
+                    } else if (e.key === "ArrowUp") {
+                        index = (index + 50) % sentences.length;
+                        updateSentence();
+                    } else if (e.key === "ArrowDown") {
+                        index = (index - 50 + sentences.length) % sentences.length;
+                        updateSentence();
+                    }
+                });
+
+                nextButton.addEventListener("click", () => {
+                    next();
                 });
 
                 backButton.addEventListener("click", () => {
-                    index = (index - 1 + sentences.length) % sentences.length;
-                    updateSentence();
+                    back();
                 });
 
                 indexInput.addEventListener("change", () => {
